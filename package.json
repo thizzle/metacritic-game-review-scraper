@@ -1,0 +1,15 @@
+{
+  "name": "Metacritic Game Review Scraper",
+  "version": "0.1.0",
+  "author": "Tharsan Bhuvanendran <me@tharsan.com>",
+
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+
+  "dependencies": {
+    "async": "0.2.9",
+    "csv-string": "1.0.3",
+    "zombie": "1.4.1"
+  }
+}
