@@ -1,6 +1,7 @@
 {
-  "name": "Metacritic Game Review Scraper",
-  "version": "0.1.0",
+  "name": "metacritic-game-review-scraper",
+  "description": "Metacritic Game Review Scraper: scrape the metacritic.com web site for game review data",
+  "version": "0.5.0",
   "author": "Tharsan Bhuvanendran <me@tharsan.com>",
 
   "engines": {
@@ -8,8 +9,7 @@
   },
 
   "dependencies": {
-    "async": "0.2.9",
     "csv-string": "1.0.3",
-    "zombie": "1.4.1"
+    "jsdom": "0.6.5"
   }
 }
