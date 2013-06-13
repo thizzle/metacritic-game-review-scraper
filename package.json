@@ -9,6 +9,7 @@
   },
 
   "dependencies": {
+    "async": "0.2.9",
     "csv-string": "1.0.3",
     "jsdom": "0.6.5"
   }

@@ -9,6 +9,7 @@
 csv     = require 'csv-string'
 util    = require 'util'
 http    = require 'http'
+async   = require 'async'
 jsdom   = require 'jsdom'
 
 # css selectors for targeting each required piece of information on a page
@@ -30,37 +31,53 @@ selectors =
 # page (number)     the page number to scrape
 # platform (string) the platform to scrape
 # letter (string)   the leading title character to scrape
-scrape = (page, platform, letter) ->
+scrape = (page, platform, letter, done) ->
   jsdom.env
     html: "http://www.metacritic.com/browse/games/title/#{platform}/#{letter}?page=#{page}"
     done: (errors, window) ->
       links = window.document.querySelectorAll '.product_condensed > ol.list_products > li a'
-      for link in links
-        scrapegame link.getAttribute('href')
+      if links.length
+        async.series
+          links: (callback) ->
+            for link in links
+              scrapegame link.getAttribute('href'), callback
+          (err, results) ->
+            scrape ++page, platform, letter, done
+      else
+        done()
 
-      scrape ++page
-
-scrape 0, 'xbox360', ''
+letters = [ '' ]
 
 for charCode in [65..90]
   letter = String.fromCharCode(charCode).toLowerCase()
-  scrape 0, 'xbox360', letter
+  letters.push letter
+
+async.eachLimit letters, 4, (letter, done) ->
+  scrape 0, 'xbox360', letter, done
 
 scrapegame = (url, done) ->
-  jsdom.env
-    html: "http://www.metacritic.com#{url}/critic-reviews"
-    done: (errors, window) ->
-      if errors
-        console.err errors
-      else
-        scrapereview window.document, 'criticreview'
+  async.parallel
+    critic: (callback) ->
+      jsdom.env
+        html: "http://www.metacritic.com#{url}/critic-reviews"
+        done: (errors, window) ->
+          if errors
+            console.error errors
+          else
+            scrapereview window.document, 'criticreview', callback
 
-  jsdom.env
-    html: "http://www.metacritic.com#{url}/user-reviews"
-    done: (errors, window) ->
-      scrapereview window.document, 'userreview'
+    user: (callback) ->
+      jsdom.env
+        html: "http://www.metacritic.com#{url}/user-reviews"
+        done: (errors, window) ->
+          if errors
+            console.error errors
+          else
+            scrapereview window.document, 'userreview', callback
+    (err, results) ->
+      done(err, results)
 
-scrapereview = (document, reviewtype) ->
+scrapereview = (document, reviewtype, callback) ->
   # catch error pages
   # metacritic doesn't follow Internet rules with correct HTTP response codes
   #  instead, errors are 200 OK responses, so we search for error module content
@@ -80,4 +97,5 @@ scrapereview = (document, reviewtype) ->
 
     console.log csv.stringify([ title, platform, type, date, score, source ]).trim()
 
+  callback(null, reviews.length)
   return
