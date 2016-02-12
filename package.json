@@ -1,16 +1,19 @@
 {
   "name": "metacritic-game-review-scraper",
   "description": "Metacritic Game Review Scraper: scrape the metacritic.com web site for game review data",
-  "version": "0.5.0",
+  "version": "1.0.0",
   "author": "Tharsan Bhuvanendran <me@tharsan.com>",
-
   "engines": {
-    "node": ">= 0.8.0"
+    "node": ">= 0.12.0"
   },
-
+  "scripts": {
+    "crawl": "node index.js"
+  },
   "dependencies": {
-    "async": "0.2.9",
-    "csv-string": "1.0.3",
-    "jsdom": "0.6.5"
+    "async": "^1.5.2",
+    "cheerio": "^0.20.0",
+    "csv-write-stream": "^1.0.0",
+    "node-fetch": "^1.3.3",
+    "sprintf-js": "^1.0.3"
   }
 }
